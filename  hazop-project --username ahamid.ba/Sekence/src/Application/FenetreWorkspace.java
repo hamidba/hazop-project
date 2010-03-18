@@ -14,7 +14,7 @@ import javax.swing.tree.TreePath;
  * @author Hamidou
  * @version 1
  */
-public class FenetreWorkspace extends JPanel
+public class FenetreWorkspace extends JPanel 
 {
 	JTree arbre;	
 	static DefaultMutableTreeNode root;

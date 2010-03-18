@@ -1,16 +1,13 @@
 package Application;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.beans.DefaultPersistenceDelegate;
 import java.beans.Encoder;
 import java.beans.ExceptionListener;
@@ -28,7 +25,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ResourceBundle;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -37,18 +33,21 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.tree.TreeSelectionModel;
 
 import Outils.FiltreExtension;
-import Vue.NoeudAbstrait;
 import Vue.ArrowHead;
 import Vue.BentStyle;
 import Vue.DiagrammeSequence;
 import Vue.Graph;
 import Vue.LineStyle;
+import Vue.NoeudAbstrait;
 
 public class FenetreEditeur extends JFrame
 {
@@ -83,11 +82,16 @@ public class FenetreEditeur extends JFrame
 		});
 		
 		//Integration du workspace et du desktop dans un splitPane qui fera office du contentPane
-		final FenetreWorkspace workspace = new FenetreWorkspace();
+		Workspace workspace = new Workspace();
+		JTree tree = new JTree(workspace);
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		WorkspaceListener listener = new WorkspaceListener(workspace, this);
+		tree.addTreeSelectionListener(listener);
+	    JScrollPane scrollPane = new JScrollPane(tree);	    
 		
 
 		desktop = new JDesktopPane();
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, workspace, desktop);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, desktop);
 		
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setDividerLocation(120);
@@ -114,8 +118,7 @@ public class FenetreEditeur extends JFrame
 				{
 					FenetreEditionDiagramme frame = new FenetreEditionDiagramme(
 						new DiagrammeSequence());
-						addInternalFrame(frame);
-						workspace.setNomDiagramme("New");
+						addInternalFrame(frame);						
 				}
 				catch (Exception exception)
 				{
@@ -388,8 +391,10 @@ public class FenetreEditeur extends JFrame
 	public static Graph read(InputStream in)
 	throws IOException
 	{
+		
 		XMLDecoder reader 
 		= new XMLDecoder(in);
+		
 		Graph graph = (Graph) reader.readObject();
 		in.close();
 		return graph;

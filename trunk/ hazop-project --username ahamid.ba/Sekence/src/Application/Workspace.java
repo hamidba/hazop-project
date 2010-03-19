@@ -1,27 +1,31 @@
 package Application;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+/**
+ * Classe representant le model du workspace
+ * 
+ * @author Hamidou
+ *
+ */
 class Workspace implements TreeModel {
-	  private String root; // The root identifier
+	  private String root;
 
-	  private Vector listeners; // Declare the listeners vector
+	  @SuppressWarnings("unchecked")
+	private Vector listeners; 
 
 	  public Workspace() {
 
 	    root = System.getProperty("user.dir");
-	    System.out.println(root.toString());
-	    File tempFile = new File(root);
-	    //root = tempFile.getParent();
-
 	    listeners = new Vector();
+	    
 	  }
 
 	  public Object getRoot() {
@@ -30,14 +34,45 @@ class Workspace implements TreeModel {
 
 	  public Object getChild(Object parent, int index) {
 	    File directory = (File) parent;
-	    String[] directoryMembers = directory.list();
+
+	    
+	    String[] directoryMembers = directory.list(new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				// TODO Auto-generated method stub
+				String ext = name.substring(name.lastIndexOf(".")+1, name.length());
+				
+				if (ext.compareTo("xml") ==0 )
+				{
+					return true;
+				}
+				return false;
+			}
+		});
+	   
+	    
 	    return (new File(directory, directoryMembers[index]));
 	  }
 
 	  public int getChildCount(Object parent) {
 	    File fileSystemMember = (File) parent;
 	    if (fileSystemMember.isDirectory()) {
-	      String[] directoryMembers = fileSystemMember.list();
+
+	      String[] directoryMembers = fileSystemMember.list(new FilenameFilter() {
+				
+				@Override
+				public boolean accept(File dir, String name) {
+					// TODO Auto-generated method stub
+					String ext = name.substring(name.lastIndexOf(".")+1, name.length());
+					
+					if (ext.compareTo("xml") ==0 )
+					{
+						return true;
+					}
+					return false;
+				}
+			});
 	      return directoryMembers.length;
 	    }
 
@@ -50,7 +85,20 @@ class Workspace implements TreeModel {
 	  public int getIndexOfChild(Object parent, Object child) {
 	    File directory = (File) parent;
 	    File directoryMember = (File) child;
-	    String[] directoryMemberNames = directory.list();
+	    String[] directoryMemberNames = directory.list(new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				// TODO Auto-generated method stub
+				String ext = name.substring(name.lastIndexOf(".")+1, name.length());
+				
+				if (ext.compareTo("xml") ==0 )
+				{
+					return true;
+				}
+				return false;
+			}
+		});
 	    int result = -1;
 
 	    for (int i = 0; i < directoryMemberNames.length; ++i) {
@@ -80,7 +128,7 @@ class Workspace implements TreeModel {
 	  }
 
 	  public void valueForPathChanged(TreePath path, Object newValue) {
-	    // Does Nothing!
+		  	//Ne sers pas pour l'instant
 	  }
 
 	  public void fireTreeNodesInserted(TreeModelEvent e) {
@@ -117,4 +165,4 @@ class Workspace implements TreeModel {
 	    }
 
 	  }
-	}
+}

@@ -94,7 +94,7 @@ public class FenetreEditeur extends JFrame
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, desktop);
 		
 		splitPane.setOneTouchExpandable(true);
-		splitPane.setDividerLocation(120);
+		//splitPane.setDividerLocation(150);
 
 		setContentPane(splitPane);
 		desktop.setBackground(new Color(100,100,100));
@@ -116,8 +116,7 @@ public class FenetreEditeur extends JFrame
 			{
 				try
 				{
-					FenetreEditionDiagramme frame = new FenetreEditionDiagramme(
-						new DiagrammeSequence());
+					FenetreEditionDiagramme frame = new FenetreEditionDiagramme(new DiagrammeSequence());
 						addInternalFrame(frame);						
 				}
 				catch (Exception exception)
@@ -290,7 +289,7 @@ public class FenetreEditeur extends JFrame
 		}      
 	}   
 
-	private void addInternalFrame(final JInternalFrame iframe)
+	public void addInternalFrame(final JInternalFrame iframe)
 	{  
 		iframe.setResizable(true);
 		iframe.setClosable(true);
@@ -325,6 +324,7 @@ public class FenetreEditeur extends JFrame
 		{
 			FileService.Open open = fileService.open(null, null, filtreSequenssos);
 			InputStream in = open.getInputStream();
+			System.out.println();
 			if (in != null)
 			{      
 				Graph graph = read(in);
@@ -388,13 +388,9 @@ public class FenetreEditeur extends JFrame
 		}
 	}
 
-	public static Graph read(InputStream in)
-	throws IOException
-	{
-		
-		XMLDecoder reader 
-		= new XMLDecoder(in);
-		
+	public static Graph read(InputStream in) throws IOException
+	{		
+		XMLDecoder reader = new XMLDecoder(in);		
 		Graph graph = (Graph) reader.readObject();
 		in.close();
 		return graph;
